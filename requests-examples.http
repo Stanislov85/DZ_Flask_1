@@ -22,7 +22,7 @@ Authorization: Token 2291906c0ab0bc2229b3cd3a75ce312d46e702da
 ###
 
 # попытка поменять объявление admin
-PATCH http://localhost:8000/api/advertisements/1/
+PATCH http://localhost:8000/api/advertisements/5/
 Content-Type: application/json
 Authorization: Token 2291906c0ab0bc2229b3cd3a75ce312d46e702da
 

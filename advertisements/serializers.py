@@ -4,7 +4,6 @@ from rest_framework.exceptions import ValidationError
 
 from advertisements.models import Advertisement
 
-
 class UserSerializer(serializers.ModelSerializer):
     """Serializer для пользователя."""
 
@@ -12,7 +11,6 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ('id', 'username', 'first_name',
                   'last_name',)
-
 
 class AdvertisementSerializer(serializers.ModelSerializer):
     """Serializer для объявления."""
@@ -40,11 +38,18 @@ class AdvertisementSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         """Метод для валидации. Вызывается при создании и обновлении."""
+
         # TODO: добавьте требуемую валидацию
-        # user = self.request.user
-        qty_advs = len(Advertisement.objects.filter(status='OPEN').filter(creator=self.context['request'].user))
-        # qty_advs = len(Advertisement.objects.filter(creator=self.context['request'].user))
-        if qty_advs >= 10 and self.context['view'].action == 'create':
-            raise ValidationError('Вы достигли максимального количества открытых объявлений (10шт)')
+        request = self.context['request']
+        qty_advs = len(Advertisement.objects.filter(creator=request.user, status='OPEN'))
+
+        if request.method == 'POST':
+            if qty_advs >= 10:
+                raise ValidationError('Вы достигли максимального количества открытых объявлений (10шт)')
+
+        if request.method == 'PATCH':
+            if data['status'] == 'OPEN':
+                if qty_advs >= 10:
+                    raise ValidationError('Вы достигли максимального количества открытых объявлений (10шт)')
 
         return data
